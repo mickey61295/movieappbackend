@@ -11,9 +11,8 @@ import { ObjectId } from 'mongodb'
 
 const router = express.Router()
 
-router.get('/', async function (req, res) {
+router.get('/', auth, async function (req, res) {
 	const filter = req.query
-
 	if (filter.rating) {
 		filter.rating = +filter.rating
 	}

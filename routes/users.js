@@ -10,7 +10,8 @@ const router = express.Router()
 router.post('/signup', async function (req, res) {
 	const { username, password } = req.body
 	const hashedPassword = await genPassword(password)
-	!(await getUserbyName(username))
+	const user = await getUserbyName(username)
+	user
 		? res.send(
 				await client
 					.db('classMongo')
@@ -23,10 +24,14 @@ router.post('/signup', async function (req, res) {
 router.post('/login', async function (req, res) {
 	const { username, password } = req.body
 	const user = await getUserbyName(username)
+	console.log(user)
 	if (user) {
 		const hashedPassword = await verifyPassword(password, user[0].password)
 		if (hashedPassword) {
-			const token = jwt.sign({ id: user[0]._id }, process.env.SECRET)
+			const token = jwt.sign(
+				{ id: user[0]._id, name: username },
+				process.env.SECRET
+			)
 			res.send({ message: "You're logged in", token: token })
 		} else {
 			res.status(400).send('Invalid Credentials')
